@@ -1,8 +1,16 @@
 {
   "compilerOptions": {
-      "target": "es6",
-      "module": "commonjs",
-      "outDir": "../../build/content"
+    "target": "es6",
+    "module": "commonjs",
+    "skipLibCheck": true,
+    "outDir": "./build"
   },
-  "include": ["src"]
+  "include": [
+    "__tests__",
+    "src",
+    "node_modules/@types/jest"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
