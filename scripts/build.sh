@@ -1,8 +1,7 @@
 #!/bin/bash
 
 rm -rf build
-rm -rf dist
-mkdir dist
+mkdir -p build/artifact
 
 (cd ./app/background && tsc)
 (cd ./app/content && tsc)
@@ -10,4 +9,4 @@ mkdir dist
 (cp ./app/manifest.json ./build/manifest.json)
 
 version="$(git rev-parse HEAD | head -c 7)"
-(zip -r app.zip ./build && mv app.zip ./dist/app-artifact.${version}.zip)
+(zip -r app.zip ./build && mv app.zip ./build/artifact/bank-transaction-allocator.${version}.zip)
