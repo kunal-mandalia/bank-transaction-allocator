@@ -1,5 +1,5 @@
 {
-  "name": "bank-transaction-allocation",
+  "name": "bank-transaction-allocator",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
