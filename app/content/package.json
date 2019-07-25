@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "devDependencies": {
+    "@types/chrome": "^0.0.86",
     "@types/jest": "^24.0.15",
     "jest": "^24.8.0",
     "ts-jest": "^24.0.2"
