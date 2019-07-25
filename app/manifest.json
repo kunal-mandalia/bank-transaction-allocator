@@ -1,0 +1,29 @@
+{
+  "manifest_version": 2,
+  "name": "Bank Transaction Allocator",
+  "version": "0.3",
+  "description": "Easily allocate bank transactions",
+  "page_action": {
+    "default_title": "Bank Transaction Allocator",
+    "default_popup": "popup/index.html"
+  },
+  "author": "Kunal Mandalia",
+  "background": {
+    "persistent": true,
+    "scripts": ["background/index.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://localhost:5000/*"],
+      "js": ["content/index.js"]
+    }
+  ],
+  "permissions": ["tabs", "storage"],
+  "web_accessible_resources": [
+    "popup/index.html",
+    "popup/static/js/*.js",
+    "popup/static/css/*.css",
+    "popup/static/css/*.map",
+    "popup/static/media/*.svg"
+  ]
+}
