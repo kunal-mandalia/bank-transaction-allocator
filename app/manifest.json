@@ -10,20 +10,24 @@
   "author": "Kunal Mandalia",
   "background": {
     "persistent": true,
-    "scripts": ["background/index.js"]
+    "page": "static/background.html"
   },
   "content_scripts": [
     {
-      "matches": ["http://localhost:5000/*"],
-      "js": ["content/index.js"]
+      "matches": [
+        "http://localhost:5000/*"
+      ],
+      "js": [
+        "content/index.js"
+      ]
     }
   ],
-  "permissions": ["tabs", "storage"],
+  "permissions": [
+    "tabs",
+    "storage"
+  ],
   "web_accessible_resources": [
-    "popup/index.html",
-    "popup/static/js/*.js",
-    "popup/static/css/*.css",
-    "popup/static/css/*.map",
-    "popup/static/media/*.svg"
+    "popup/*",
+    "content/*"
   ]
 }
