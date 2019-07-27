@@ -1,4 +1,7 @@
+import { hello } from '@bank-transaction-allocator/common'
+
 console.log(`background running`)
+hello('you')
 
 chrome.runtime.onMessage.addListener(
   function (request, sender, sendResponse) {

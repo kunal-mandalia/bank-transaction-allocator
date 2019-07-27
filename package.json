@@ -1,11 +1,15 @@
 {
   "name": "bank-transaction-allocator",
+  "private": true,
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
     "build": "./scripts/build.sh",
     "test": "./scripts/test.sh",
-    "stub": "serve ./stub"
-  }
+    "stub": "serve packages/stub"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
 }

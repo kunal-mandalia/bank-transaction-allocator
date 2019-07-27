@@ -1,5 +1,5 @@
 {
-  "name": "popup",
+  "name": "@bank-transaction-allocator/popup",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
