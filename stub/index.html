@@ -37,7 +37,7 @@
     padding: 20px;
   }
 
-  .modal-wrapper.hide {
+  .hide {
     display: none;
   }
 
@@ -169,15 +169,15 @@
           Explanation
         </p>
         <p>
-          <select id='explanation' value='default'>
+          <select class="hide" id='explanation' value='default'>
             <option value='default'>---Select Explanation---</option>
             <option value='travel'>Travel</option>
             <option value='income'>Income</option>
           </select>
         </p>
         <br />
-        <button id='modal-submit'>Allocate</button>
-        <button id='modal-close'>Close</button>
+        <button id='submit-allocation-details'>Allocate</button>
+        <button id='close-allocation-details'>Close</button>
     </div>
   </div>
 </body>
@@ -186,11 +186,13 @@
   window.addEventListener('load', async () => {
     console.log('stub loaded')
 
-    async function init() {
+    function init() {
       console.log('init script')
       const modalWrapper = document.getElementById('modal-wrapper')
-      const modalSubmit = document.getElementById('modal-submit')
-      const modalClose = document.getElementById('modal-close')
+      const modalSubmit = document.getElementById('submit-allocation-details')
+      const modalClose = document.getElementById('close-allocation-details')
+      const category = document.getElementById('category')
+      const explanation = document.getElementById('explanation')
 
       const transactions = document.querySelectorAll('#transactions > tbody > tr')
       for (let line of transactions) {
@@ -204,6 +206,20 @@
         hideModal()
       })
 
+      category.addEventListener('change', handleCategoryChange)
+
+      async function handleCategoryChange(event) {
+        console.log('handleCategoryChange', event)
+        const { value } = event.target
+        if (value !== 'default') {
+          const duration = Math.random() * 1000 * 4
+          await wait(duration)
+          explanation.classList.remove('hide')
+        } else {
+          explanation.classList.add('hide')
+        }
+      }
+
       function hideModal() {
         modalWrapper.classList.remove('show')
         modalWrapper.classList.add('hide')
@@ -212,6 +228,7 @@
       function showModal() {
         modalWrapper.classList.remove('hide')
         modalWrapper.classList.add('show')
+        explanation.classList.add('hide')
       }
 
       function showAllocateTransactionModal(row) {
@@ -258,15 +275,20 @@
       updateProcessedTransactions()
     }
 
-    async function simulateDelay(maxSeconds = 2) {
-      const wait = Math.random() * maxSeconds * 1000
+    async function wait(ms = 1000) {
       return new Promise(resolve => setTimeout(() => {
-        console.log('delay over')
-        const loading = document.getElementById('loading')
-        loading.classList.remove('show')
-        loading.classList.add('hide')
-        init()
-      }, wait))
+        resolve()
+      }, ms))
+    }
+
+    async function simulateDelay(maxSeconds = 5) {
+      const duration = Math.random() * maxSeconds * 1000
+      await wait(duration)
+      console.log('delay over')
+      init()
+      const loading = document.getElementById('loading')
+      loading.classList.remove('show')
+      loading.classList.add('hide')
     }
     await simulateDelay()
   })
