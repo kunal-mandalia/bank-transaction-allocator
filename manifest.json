@@ -10,7 +10,7 @@
   "author": "Kunal Mandalia",
   "background": {
     "persistent": true,
-    "page": "static/background.html"
+    "page": "background/background.html"
   },
   "content_scripts": [
     {
@@ -18,7 +18,7 @@
         "http://localhost:5000/*"
       ],
       "js": [
-        "content/index.js"
+        "content/content.js"
       ]
     }
   ],
@@ -29,5 +29,6 @@
   "web_accessible_resources": [
     "popup/*",
     "content/*"
-  ]
+  ],
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
 }

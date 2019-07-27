@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "./build",
+    "target": "esNext",
+    "module": "esNext",
+    "moduleResolution": "node",
+  },
+  "include": [
+    "./src/**/*"
+  ]
+}

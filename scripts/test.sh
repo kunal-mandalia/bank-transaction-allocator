@@ -1,3 +1,3 @@
-(cd ./app/background && yarn test)
-(cd ./app/content && yarn test)
-(cd ./app/popup && CI=true yarn test)
+(cd ./packages/background && yarn test)
+(cd ./packages/content && yarn test)
+(cd ./packages/popup && CI=true yarn test)
