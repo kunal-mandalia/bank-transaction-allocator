@@ -15,6 +15,7 @@ jobs:
             - v1-dependencies-
 
       - run: (cd ~/repo/packages/common && yarn install)
+      - run: (cd ~/repo/packages/common && yarn build)
 
       - save_cache:
           paths:
