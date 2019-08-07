@@ -14,6 +14,28 @@ jobs:
             - v1-dependencies-{{ checksum "package.json" }}
             - v1-dependencies-
 
+      - run: (cd ~/repo/packages/common && yarn install)
+
+      - save_cache:
+          paths:
+            - ~/repo/packages/common/node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+
+
+  build-test-background:
+    docker:
+      - image: circleci/node:lts
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            - v1-dependencies-
+
       - run: (cd ~/repo/packages/background && yarn install)
 
       - save_cache:
