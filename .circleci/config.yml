@@ -15,13 +15,13 @@ jobs:
             - v1-dependencies-
 
       - run: (cd ~/repo/packages/common && yarn install)
-      - run: (cd ~/repo/packages/common && yarn build)
 
       - save_cache:
           paths:
             - ~/repo/packages/common/node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
 
+      - run: (cd ~/repo/packages/common && yarn build)
 
   build-test-background:
     docker:
@@ -37,7 +37,6 @@ jobs:
             - v1-dependencies-{{ checksum "package.json" }}
             - v1-dependencies-
 
-      - run: (cd ~/repo/packages/common && yarn install && yarn build)
       - run: (cd ~/repo/packages/background && yarn install)
 
       - save_cache:
@@ -45,7 +44,8 @@ jobs:
             - ~/repo/packages/background/node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
 
-      - run: cd ~/repo/packages/background && yarn test
+      - run: (cd ~/repo/packages/common && yarn build)
+      - run: (cd ~/repo/packages/background && yarn test)
 
   build-test-content:
     docker:
