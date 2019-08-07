@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build-test-background:
+  build-common:
     docker:
       - image: circleci/node:lts
 
@@ -95,6 +95,7 @@ workflows:
   version: 2
   build-test-packages:
     jobs:
+      - build-common
       - build-test-background
       - build-test-content
       - build-test-popup
