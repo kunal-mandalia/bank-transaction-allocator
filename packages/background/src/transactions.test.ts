@@ -1,11 +1,11 @@
 
 import { getTransactionAllocations } from './transaction'
-import { AllocationConditionType } from './types'
+import { types } from '@bank-transaction-allocator/common'
 
 const rules = [
   {
     condition: {
-      type: AllocationConditionType.STARTS_WITH,
+      type: types.AllocationConditionType.STARTS_WITH,
       value: 'CARD PAYMENT TO TFL'
     },
     decision: {
@@ -15,7 +15,7 @@ const rules = [
   },
   {
     condition: {
-      type: AllocationConditionType.CONTAINS,
+      type: types.AllocationConditionType.CONTAINS,
       value: 'HMRC'
     },
     decision: {
@@ -68,7 +68,7 @@ describe('background: transaction', () => {
           isAllocatable: true,
           rule: {
             condition: {
-              type: AllocationConditionType.STARTS_WITH,
+              type: types.AllocationConditionType.STARTS_WITH,
               value: 'CARD PAYMENT TO TFL'
             },
             decision: {
@@ -91,7 +91,7 @@ describe('background: transaction', () => {
           isAllocatable: true,
           rule: {
             condition: {
-              type: AllocationConditionType.CONTAINS,
+              type: types.AllocationConditionType.CONTAINS,
               value: 'HMRC'
             },
             decision: {

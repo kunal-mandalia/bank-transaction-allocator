@@ -1,26 +1,99 @@
 import React from 'react';
-import logo from './logo.svg';
+import { store } from '@bank-transaction-allocator/common'
+import { startProcessingTransactions, setupMessageListeners } from './popup'
+import { History } from './History'
+import { Upcoming } from './Upcoming'
+import { Spacer } from './Spacer'
+
+
 import './App.css';
 
-const App: React.FC = () => {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+interface IProps {}
+interface IState {
+  storeState: store.State | null
 }
 
-export default App;
+class WithStore extends React.Component<IProps, IState> {
+  constructor(props: IProps) {
+    super(props)
+    this.state = {
+      storeState: null
+    }
+  }
+
+  componentDidMount() {
+    setupMessageListeners({
+      onStoreChange: this.handleStoreChange
+    })
+    this.syncStoreState()
+  }
+
+  handleStoreChange = async () => {
+    const state = await store.get()
+    this.setState({ storeState: state })
+    this.forceUpdate()
+  }
+
+  syncStoreState = async () => {
+    const state = await store.get()
+    this.setState({ storeState: state })
+  }
+
+  render() {
+    if (!this.state.storeState) {
+      return (<div>Waiting for store...</div>)
+    }
+
+    return (<App storeState={this.state.storeState} syncStoreState={this.syncStoreState} />)
+  }
+}
+
+interface IAppProps {
+  storeState: store.State,
+  syncStoreState: Function
+}
+
+class App extends React.Component<IAppProps> {
+  start = async () => {
+    await store.set({ status: store.Status.ACTIVE })
+    await this.props.syncStoreState()
+    await startProcessingTransactions()
+  }
+
+  stop = async () => {
+    await store.set({ status: store.Status.IDLE })
+    await this.props.syncStoreState()
+  }
+
+  getUpcomingAllocations = () => {
+    const { storeState } = this.props
+    const historicalTransactionId = this.props.storeState.history.map(h => h.id)
+    return storeState.allocations.filter(a => {
+      if (!a.isAllocatable) return false
+      if (historicalTransactionId.includes(a.transaction.id)) return false
+      return true
+    })
+  }
+
+  render() {
+    const upcoming = this.getUpcomingAllocations()
+    const status = this.props.storeState.status
+    console.log('App this', this, this.props.storeState)
+    console.log('upcoming', upcoming)
+    return (
+      <div className="App">
+        {
+          status === store.Status.ACTIVE
+          ? <button onClick={this.stop}>Stop</button>
+          : <button onClick={this.start}>Start</button>
+        }
+        <Spacer />
+        <History history={this.props.storeState.history} />
+        <Spacer />
+        <Upcoming allocations={upcoming} />
+      </div>
+    );
+  }
+}
+
+export default WithStore;

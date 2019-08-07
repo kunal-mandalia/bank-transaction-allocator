@@ -1,0 +1,27 @@
+table {
+  background-color: #37678e;
+  text-align: left;
+  width: 100%;
+}
+
+tr {
+  background: #2f444d;
+  font-size: x-small;
+}
+
+td {
+  padding: 5px 10px;
+}
+
+.success {
+  background-color: rgb(22, 121, 22);
+}
+
+.inprogress {
+  background-color: rgb(224, 138, 0);
+}
+
+.pending {
+  background-color: #a90000;
+}
+

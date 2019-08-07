@@ -3,7 +3,8 @@
     "outDir": "./build",
     "target": "es6",
     "module": "es6",
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "esModuleInterop": true
   },
   "include": [
     "./src/**/*"
