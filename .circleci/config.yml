@@ -96,12 +96,12 @@ workflows:
   build-test-packages:
     jobs:
       - build-common
-      - build-test-background
+      - build-test-background:
           requires:
             - build-common
-      - build-test-content
+      - build-test-content:
           requires:
             - build-common
-      - build-test-popup
+      - build-test-popup:
           requires:
             - build-common
