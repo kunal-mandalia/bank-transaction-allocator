@@ -97,5 +97,11 @@ workflows:
     jobs:
       - build-common
       - build-test-background
+          requires:
+            - build-common
       - build-test-content
+          requires:
+            - build-common
       - build-test-popup
+          requires:
+            - build-common
