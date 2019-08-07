@@ -44,7 +44,6 @@ jobs:
             - ~/repo/packages/background/node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
 
-      - run: (cd ~/repo/packages/common && yarn build)
       - run: (cd ~/repo/packages/background && yarn test)
 
   build-test-content:
