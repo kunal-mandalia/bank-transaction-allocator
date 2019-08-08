@@ -37,7 +37,7 @@ jobs:
             - v1-dependencies-{{ checksum "package.json" }}
             - v1-dependencies-
 
-      - run: (cd ~/repo/packages/common && yarn build)
+      - run: (cd ~/repo/packages/common && yarn install && yarn build)
       - run: (cd ~/repo/packages/background && yarn install)
 
       - save_cache:
