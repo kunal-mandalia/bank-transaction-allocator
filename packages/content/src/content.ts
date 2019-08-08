@@ -1,3 +1,17 @@
+import { constants, message } from '@bank-transaction-allocator/common'
+import { MESSAGE_TRANSACTION_ALLOCATED } from '@bank-transaction-allocator/common/dist/constants';
+
+const {
+  MESSAGE_GET_TRANSACTIONS,
+  MESSAGE_ALLOCATE_TRANSACTION,
+  MESSAGE_READY_FOR_ALLOCATION,
+  MESSAGE_ACTIVATE_POPUP
+} = constants
+
+const {
+  Status: MessageStatus
+} = message
+
 type Config = {
   enablePopup: Boolean
 }
@@ -13,13 +27,19 @@ type Transaction = {
   isAllocated: boolean
 }
 
+type Allocation = {
+  category: string,
+  explanation: string
+}
+
 async function sendMessage(message: Message): Promise<boolean> {
   return new Promise((resolve, reject) => {
-    chrome.runtime.sendMessage(message, resolve)
+    // fire and forget
+    chrome.runtime.sendMessage(message)
+    return resolve()
   })
 }
 
-// get transactions
 function getId(row: HTMLTableRowElement): string {
   return row.dataset.urn
 }
@@ -48,19 +68,14 @@ function getTransactions(): Array<Transaction> {
   return transactions
 }
 
-async function announceTransactions() {
-  const transactions = getTransactions()
-  console.log(`announcing transactions`, transactions)
-  // await sendMessage({
-  //   type: 'ANNOUNCE_TRANSACTIONS',
-  //   payload: transactions
-  // })
-}
-
-// allocate transactions
-type Allocation = {
-  category: string,
-  explanation: string
+async function announceReadiness(isReady: boolean) {
+  console.log(`announcing readiness`, isReady)
+  await sendMessage({
+    type: MESSAGE_READY_FOR_ALLOCATION,
+    payload: {
+      isReady
+    }
+  })
 }
 
 function getTransactionById(id): HTMLTableRowElement | null {
@@ -78,32 +93,70 @@ function getTransactionById(id): HTMLTableRowElement | null {
 }
 
 function showTransactionDetails(transaction: HTMLTableRowElement) {
+  transaction.scrollIntoView({ behavior: 'auto', block: 'center' })
   transaction.click()
 }
 
-async function updateAllocation(allocation: Allocation) {
-
-  await waitForElement('select#category')
-  const category = document.querySelector('select#category')
-  // @ts-ignore
-  category.value = allocation.category
-
-  const changeEvent = new Event('change')
-  category.dispatchEvent(changeEvent)
-
-  await waitForElement('select#explanation')
-  const explanation = document.querySelector('select#explanation')
-  // @ts-ignore
-  explanation.value = allocation.explanation
-  explanation.dispatchEvent(changeEvent)
-
-  const confirm = document.getElementById('submit-allocation-details')
-  confirm.click()
+async function setSelectValue(query, displayValue) {
+  console.log(`set select value of control ${query} to ${displayValue}`)
+  const select = document.querySelector(query)
+  if (select) {
+    for (let option of select.options) {
+      if (option.text === displayValue) {
+        select.value = option.value
+        const event = new Event('change')
+        select.dispatchEvent(event)
+        console.log(`value set for ${query}`, select)
+        break
+      }
+    }
+  }
 }
 
-function allocate(transaction: HTMLTableRowElement, allocation: Allocation) {
+async function updateAllocation(id: string, allocation: Allocation) {
+  const options: WaitOptions = {
+    duration: 250,
+    maxRetries: 120,
+    validator: el => el.options && el.options.length > 1
+  }
+
+  await waitForElement('select.pagesize', options)
+  await setSelectValue('select.pagesize', 'all')
+
+  await waitForElement('select#allocation_accounts', options)
+  await setSelectValue('select#allocation_accounts', allocation.category)
+
+  await waitForElement('select#allocation_bt_', {
+    ...options,
+    validator: (select: HTMLSelectElement) => !!Array.from(select.options).find(option => option.text === allocation.explanation)
+  })
+  await setSelectValue('select#allocation_bt_', allocation.explanation)
+
+  await waitForElement('#btn_allocation_save', { ...options, validator: btn => btn.disabled !== true })
+  const confirm = document.getElementById('btn_allocation_save')
+  confirm.click()
+
+  await waitForElement('#manage_allocation > tbody > tr.allocation_line', {
+    ...options,
+    validator: line => !!line
+  })
+
+  const close = document.getElementById('btn_close')
+  close.click()
+
+  console.log('confirming transaction allocated')
+
+  await sendMessage({
+    type: MESSAGE_TRANSACTION_ALLOCATED,
+    payload: { id }
+  })
+
+  window.location.reload()
+}
+
+async function allocate(id: string, transaction: HTMLTableRowElement, allocation: Allocation) {
   showTransactionDetails(transaction)
-  updateAllocation(allocation)
+  updateAllocation(id, allocation)
 }
 
 async function allocateTransaction(id: string, allocation: Allocation) {
@@ -111,26 +164,33 @@ async function allocateTransaction(id: string, allocation: Allocation) {
   if (transaction === null) {
     return console.log(`cannot find transaction`, id)
   }
-  allocate(transaction, allocation)
+  return allocate(id, transaction, allocation)
 }
 
-// message listeners
 function setupMessageListener() {
   chrome.runtime.onMessage.addListener((message: Message, sender, sendResponse) => {
-    console.log(`content received message`, message, sender)
+    console.log(`content received message`, JSON.stringify(message), sender)
 
     switch (message.type) {
-      case 'ALLOCATE_TRANSACTION':
+      case MESSAGE_GET_TRANSACTIONS:
+        const transactions = getTransactions()
+        console.log('responding with transactions', transactions)
+        sendResponse({ transactions })
+        return true
+        break
+
+      case MESSAGE_ALLOCATE_TRANSACTION:
         // @ts-ignore
         const { id, allocation } = message.payload
+        sendResponse({ status: MessageStatus.OK })
         allocateTransaction(id, allocation)
+        return true
         break
 
       default:
         console.log(`content did not handle message`, message, sender)
         break
     }
-
     return true
   })
 }
@@ -143,10 +203,18 @@ async function wait(ms = 1000) {
 
 type WaitOptions = {
   duration?: number,
-  maxRetries?: number
+  maxRetries?: number,
+  validator?: Function
 }
 
-async function waitForElement(query: string, options: WaitOptions = { duration: 500, maxRetries: 30 }): Promise<boolean> {
+async function waitForElement(
+  query: string,
+  options: WaitOptions = {
+    duration: 500,
+    maxRetries: 30,
+    validator: () => true
+  }): Promise<Element> {
+  console.log('wait for element options', options)
   let tries = 0
   let found = false
 
@@ -156,13 +224,18 @@ async function waitForElement(query: string, options: WaitOptions = { duration: 
     const el = document.querySelector(query)
     // @ts-ignore
     if (el && el.computedStyleMap().get("display").value !== "none") {
-      found = true
-      console.log(`found element after ${tries} tries`)
-      break
+      if (options.validator(el) === true) {
+        found = true
+        // @ts-ignore
+        console.log(`found element after ${tries} tries`, el, el.value)
+        // el.scrollIntoView()
+        return el
+        break
+      }
     }
     await wait(options.duration)
   }
-  return found
+  throw new Error(`Did not find element ${query}`)
 }
 
 async function waitForElementVanish(query: string, options: WaitOptions = { duration: 500, maxRetries: 30 }): Promise<boolean> {
@@ -183,6 +256,7 @@ async function waitForElementVanish(query: string, options: WaitOptions = { dura
     if (!el || el.computedStyleMap().get("display").value === "none") {
       didVanished = true
       console.log(`element vanished after ${tries} tries`)
+      // el.scrollIntoView()
       break
     }
     await wait(options.duration)
@@ -202,20 +276,15 @@ function getNextUnallocatedTransaction(): string | null {
   return next
 }
 
-export async function main(config: Config): Promise<object> {
-  chrome.runtime.sendMessage({ "message": "activate_icon" })
+export async function main(config: Config): Promise<void> {
+  await sendMessage({ type: MESSAGE_ACTIVATE_POPUP })
   console.log(`send message to enable popup`)
   setupMessageListener()
   const didVanish = await waitForElementVanish('#loading')
   console.log(`loading complete`, didVanish)
 
-
-  await announceTransactions()
-  const id = getNextUnallocatedTransaction()
-  if (id) {
-    await allocateTransaction(id, { category: 'expenses', explanation: 'travel' })
-  }
-  return Promise.resolve({ allocateTransaction })
+  await announceReadiness(true)
+  return Promise.resolve()
 }
 
 export default {

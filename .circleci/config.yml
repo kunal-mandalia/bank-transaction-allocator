@@ -1,5 +1,28 @@
 version: 2
 jobs:
+  build-common:
+    docker:
+      - image: circleci/node:lts
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            - v1-dependencies-
+
+      - run: (cd ~/repo/packages/common && yarn install)
+
+      - save_cache:
+          paths:
+            - ~/repo/packages/common/node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+
+      - run: (cd ~/repo/packages/common && yarn build)
+
   build-test-background:
     docker:
       - image: circleci/node:lts
@@ -14,6 +37,7 @@ jobs:
             - v1-dependencies-{{ checksum "package.json" }}
             - v1-dependencies-
 
+      - run: (cd ~/repo/packages/common && yarn install && yarn build)
       - run: (cd ~/repo/packages/background && yarn install)
 
       - save_cache:
@@ -21,7 +45,7 @@ jobs:
             - ~/repo/packages/background/node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
 
-      - run: cd ~/repo/packages/background && yarn test
+      - run: (cd ~/repo/packages/background && yarn test)
 
   build-test-content:
     docker:
@@ -73,6 +97,13 @@ workflows:
   version: 2
   build-test-packages:
     jobs:
-      - build-test-background
-      - build-test-content
-      - build-test-popup
+      - build-common
+      - build-test-background:
+          requires:
+            - build-common
+      - build-test-content:
+          requires:
+            - build-common
+      - build-test-popup:
+          requires:
+            - build-common

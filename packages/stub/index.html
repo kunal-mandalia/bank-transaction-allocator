@@ -32,7 +32,7 @@
   }
 
   .modal {
-    background-color: white;
+    background-color: #c1c1c1;
     height: 300px;
     padding: 20px;
   }
@@ -100,7 +100,7 @@
         <td class="ar"></td>
         <td class="ar">£490</td>
         <td class="ar">£500</td>
-        <td class="ar attention" nowrap="nowrap" width="40">
+        <td class="ar allocated" nowrap="nowrap" width="40">
         </td>
         <td class="ar arrow_down" nowrap="nowrap" width="20"></td>
       </tr>
@@ -110,7 +110,7 @@
         <td class="ar"></td>
         <td class="ar">£5.00</td>
         <td class="ar">£990.00</td>
-        <td class="ar allocated" nowrap="nowrap" width="40">
+        <td class="ar attention" nowrap="nowrap" width="40">
         </td>
         <td class="ar arrow_down" nowrap="nowrap" width="20"></td>
       </tr>
@@ -145,6 +145,10 @@
       </tr>
     </tfoot>
   </table>
+  <select class='pagesize' value="10">
+    <option value="10">10</option>
+    <option value="99999">all</option>
+  </select>
   <div id='loading' class='modal-wrapper show'>
     <div class='modal'>
       Loading...
@@ -153,31 +157,37 @@
   <div id='modal-wrapper' class='modal-wrapper hide'>
     <div class='modal'>
       <h2>Allocate transaction</h1>
-        <p>
-          Category
-        </p>
-        <p>
-          <select id='category' value='default'>
-            <option value='default'>---Select Category---</option>
-            <option value='expenses'>Expenses</option>
-            <option value='tax'>Tax</option>
-            <option value='dividends'>Dividends</option>
-          </select>
-        </p>
-        <br />
-        <p>
-          Explanation
-        </p>
-        <p>
-          <select class="hide" id='explanation' value='default'>
-            <option value='default'>---Select Explanation---</option>
-            <option value='travel'>Travel</option>
-            <option value='income'>Income</option>
-          </select>
-        </p>
-        <br />
-        <button id='submit-allocation-details'>Allocate</button>
-        <button id='close-allocation-details'>Close</button>
+        <table id='manage_allocation'>
+          <tbody>
+            <tr>
+              <td>
+                Category
+              </td>
+              <td>
+                <select id='allocation_accounts' value='default'>
+                  <option value='default'>---Select Category---</option>
+                  <option value='expenses'>Expenses</option>
+                  <option value='tax'>Tax</option>
+                  <option value='dividends'>Dividends</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Explanation
+              </td>
+              <td>
+                <select class="hide" id='allocation_bt_' value='default'>
+                  <option value='default'>---Select Explanation---</option>
+                  <option value='travel'>Travel</option>
+                  <option value='income'>Income</option>
+                </select>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <button id='btn_allocation_save'>Allocate</button>
+        <button id='btn_close'>Close</button>
     </div>
   </div>
 </body>
@@ -189,10 +199,10 @@
     function init() {
       console.log('init script')
       const modalWrapper = document.getElementById('modal-wrapper')
-      const modalSubmit = document.getElementById('submit-allocation-details')
-      const modalClose = document.getElementById('close-allocation-details')
-      const category = document.getElementById('category')
-      const explanation = document.getElementById('explanation')
+      const modalSubmit = document.getElementById('btn_allocation_save')
+      const modalClose = document.getElementById('btn_close')
+      const category = document.getElementById('allocation_accounts')
+      const explanation = document.getElementById('allocation_bt_')
 
       const transactions = document.querySelectorAll('#transactions > tbody > tr')
       for (let line of transactions) {
@@ -201,10 +211,6 @@
           showAllocateTransactionModal(line)
         })
       }
-
-      modalClose.addEventListener('click', () => {
-        hideModal()
-      })
 
       category.addEventListener('change', handleCategoryChange)
 
@@ -236,12 +242,15 @@
         const col = row.children[5]
         showModal()
         const { category, explanation } = col.dataset
-        document.getElementById('category').value = category || 'default'
-        document.getElementById('explanation').value = explanation || 'default'
+        document.getElementById('allocation_accounts').value = category || 'default'
+        document.getElementById('allocation_bt_').value = explanation || 'default'
 
         modalSubmit.addEventListener('click', () => {
+          document.querySelector('#manage_allocation > tbody > tr').classList.add('allocation_line')
           allocateTransaction(urn)
-          updateProcessedTransactions()
+        })
+
+        modalClose.addEventListener('click', () => {
           hideModal()
         })
       }
@@ -256,7 +265,9 @@
 
       function allocateTransaction(urn) {
         const s = searchToObject(location.search)
-        location.search = s.processedTransactions ? `?processedTransactions=${s.processedTransactions},${urn}` : `?processedTransactions=${urn}`
+        const nextSearch = s.processedTransactions ? `?processedTransactions=${s.processedTransactions},${urn}` : `?processedTransactions=${urn}`
+        const { origin, pathname } = location
+        window.history.pushState({}, 'App', `${origin}${pathname}${nextSearch}`)
       }
 
       function updateProcessedTransactions() {
@@ -285,11 +296,12 @@
       const duration = Math.random() * maxSeconds * 1000
       await wait(duration)
       console.log('delay over')
-      init()
       const loading = document.getElementById('loading')
       loading.classList.remove('show')
       loading.classList.add('hide')
     }
+
+    await init()
     await simulateDelay()
   })
 </script>

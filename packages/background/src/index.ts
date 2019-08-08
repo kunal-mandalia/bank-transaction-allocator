@@ -1,12 +1,15 @@
-import { hello } from '@bank-transaction-allocator/common'
+import { setupMessageListener, setupTabListener, loopStateUpdate } from './background'
+import { store } from '@bank-transaction-allocator/common'
 
 console.log(`background running`)
-hello('you')
 
-chrome.runtime.onMessage.addListener(
-  function (request, sender, sendResponse) {
-    if (request.message === "activate_icon") {
-      console.log(`enabling popup on tab ${sender.tab.id}`)
-      chrome.pageAction.show(sender.tab.id)
-    }
-  })
+async function main() {
+  await store.setInitialState()
+  console.log('setting up message listeners')
+  await setupMessageListener()
+  await setupTabListener()
+  console.log('setup up message listeners complete')
+
+}
+
+main()

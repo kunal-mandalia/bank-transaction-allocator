@@ -19,6 +19,7 @@
     "build:prod": "webpack --config webpack.config.prod.js"
   },
   "dependencies": {
-    "typescript": "^3.5.3"
+    "typescript": "^3.5.3",
+    "@bank-transaction-allocator/common": "0.0.2"
   }
 }

@@ -1,5 +1,6 @@
+import { types } from '@bank-transaction-allocator/common'
+
 import {
-  AllocationConditionType,
   AllocationRule,
   Transaction,
   TransactionAllocation
@@ -7,13 +8,13 @@ import {
 
 function applicableRule(description: string, rule: AllocationRule): AllocationRule | null {
   switch (rule.condition.type) {
-    case AllocationConditionType.CONTAINS:
+    case types.AllocationConditionType.CONTAINS:
       if (description.includes(rule.condition.value)) {
         return rule
       }
       return null
 
-    case AllocationConditionType.STARTS_WITH:
+    case types.AllocationConditionType.STARTS_WITH:
       if (description.startsWith(rule.condition.value)) {
         return rule
       }
@@ -31,7 +32,7 @@ function isUnallocated(transaction: Transaction): boolean {
 export function getTransactionAllocations(input: {
   transactions: Array<Transaction>,
   rules: Array<AllocationRule>,
-}): Array<TransactionAllocation> {
+}, ): Array<TransactionAllocation> {
   const { transactions, rules } = input
   return transactions.reduce((acc, cur): Array<TransactionAllocation> => {
     for (let i = 0; i < rules.length; i++) {
