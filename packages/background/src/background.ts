@@ -167,7 +167,7 @@ export function getLatestState({ allocations, state } : IGetLatestState): store.
   return {
     ...state,
     history: nextHistory,
-    allocations
+    allocations: allocations.filter(allocation => allocation.isAllocatable)
   }
 }
 
@@ -213,6 +213,8 @@ async function processNextAllocation() {
         return h
       })
     } else {
+      const history = state.history;
+      console.log(`history`, history)
       await store.set({
         history: [
           ...state.history,

@@ -1,3 +1,3 @@
-(cd ./packages/background && yarn test)
-(cd ./packages/content && yarn test)
-(cd ./packages/popup && CI=true yarn test)
+(cd ./packages/background && yarn test --passWithNoTests)
+(cd ./packages/content && yarn test --passWithNoTests)
+(cd ./packages/popup && CI=true yarn test --passWithNoTests)

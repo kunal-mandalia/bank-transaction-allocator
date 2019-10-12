@@ -51,7 +51,7 @@ export const initialState: State = {
 }
 
 export function setInitialState() {
-  chrome.storage.sync.get(storage => {
+  chrome.storage.local.get(storage => {
     if (!storage.initialised) {
       set(initialState)
       console.log('set initial state')
@@ -63,7 +63,7 @@ export function setInitialState() {
 
 export async function get(): Promise<State> {
   return new Promise(resolve => {
-    chrome.storage.sync.get(storage => {
+    chrome.storage.local.get(storage => {
       // @ts-ignore
       return resolve(storage)
     })
@@ -77,7 +77,7 @@ export function isActive(state: State) {
 export function set(state: Partial<State>): Promise<Partial<State>> {
   return new Promise(async resolve => {
     console.log('state set')
-    chrome.storage.sync.set(state)
+    chrome.storage.local.set(state)
     chrome.runtime.sendMessage({
       type: MESSAGE_STORE_UPDATED,
     })
