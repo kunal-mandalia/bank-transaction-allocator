@@ -1,4 +1,4 @@
-import { setupMessageListener, setupTabListener, loopStateUpdate } from './background'
+import { setupMessageListener, setupTabListener } from './background'
 import { store } from '@bank-transaction-allocator/common'
 
 console.log(`background running`)
