@@ -1,6 +1,6 @@
 import { store, message, constants, types } from '@bank-transaction-allocator/common'
 import { getTransactionAllocations } from './transaction'
-
+import { rules } from './rules'
 
 const {
   MESSAGE_ACTIVATE_POPUP,
@@ -16,39 +16,6 @@ const {
 const {
   Status: MessageStatus
 } = message
-
-const rules = [
-  {
-    condition: {
-      type: types.AllocationConditionType.STARTS_WITH,
-      value: 'CARD PAYMENT TO TFL'
-    },
-    decision: {
-      category: 'Expenses',
-      explanation: 'Travel'
-    }
-  },
-  {
-    condition: {
-      type: types.AllocationConditionType.STARTS_WITH,
-      value: 'CARD PAYMENT TO MARKS&SPENCER'
-    },
-    decision: {
-      category: 'Expenses',
-      explanation: 'Sundry Expenses'
-    }
-  },
-  {
-    condition: {
-      type: types.AllocationConditionType.STARTS_WITH,
-      value: 'CARD PAYMENT TO TESCO STORE'
-    },
-    decision: {
-      category: 'Expenses',
-      explanation: 'Sundry Expenses'
-    }
-  }
-]
 
 export function setupMessageListener() {
   chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
