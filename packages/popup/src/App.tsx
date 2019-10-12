@@ -4,7 +4,7 @@ import { startProcessingTransactions, setupMessageListeners } from './popup'
 import { History } from './History'
 import { Upcoming } from './Upcoming'
 import { Spacer } from './Spacer'
-
+import { Button } from './Button'
 
 import './App.css';
 
@@ -84,12 +84,15 @@ class App extends React.Component<IAppProps> {
       <div className="App">
         {
           status === store.Status.ACTIVE
-          ? <button onClick={this.stop}>Stop</button>
-          : <button onClick={this.start}>Start</button>
+          ? <Button label="Stop" btnStyle="warning" onClick={this.stop}/>
+          : <Button label="Start" btnStyle="success" onClick={this.start}/>
         }
         <Spacer />
+        <h1>History</h1>
         <History history={this.props.storeState.history} />
+        
         <Spacer />
+        <h1>Upcoming</h1>
         <Upcoming allocations={upcoming} />
       </div>
     );
