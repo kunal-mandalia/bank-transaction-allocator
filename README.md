@@ -3,3 +3,13 @@
 ## Manage rules
 
 The rules determining how transactions should be allocated are defined in `./packages/background/rules.ts`. Keep these up to date to ensure transactions are categorised correctly.
+
+
+## Run locally
+
+1. Build app
+```
+yarn build
+```
+
+2. Load unpacked in Chrome `./build`
