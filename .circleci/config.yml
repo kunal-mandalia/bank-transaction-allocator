@@ -45,7 +45,7 @@ jobs:
             - ~/repo/packages/background/node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
 
-      - run: (cd ~/repo/packages/background && yarn test)
+      - run: (cd ~/repo/packages/background && yarn test --passWithNoTests)
 
   build-test-content:
     docker:
@@ -68,7 +68,7 @@ jobs:
             - ~/repo/packages/content/node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
 
-      - run: cd ~/repo/packages/content && yarn test
+      - run: cd ~/repo/packages/content && yarn test --passWithNoTests
 
   build-test-popup:
     docker:
@@ -91,7 +91,7 @@ jobs:
             - ~/repo/packages/content/node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
 
-      - run: cd ~/repo/packages/content && CI=true yarn test
+      - run: cd ~/repo/packages/content && CI=true yarn test --passWithNoTests
 
 workflows:
   version: 2
