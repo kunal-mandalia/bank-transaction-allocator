@@ -40,5 +40,45 @@ export const rules = [
       category: 'Other Income',
       explanation: 'Bank Interest Received'
     }
-  }
+  },
+  {
+    condition: {
+      type: types.AllocationConditionType.STARTS_WITH,
+      value: 'CARD PAYMENT TO GIFFGAFF'
+    },
+    decision: {
+      category: 'Expenses',
+      explanation: 'Telephone & Internet'
+    }
+  },
+  {
+    condition: {
+      type: types.AllocationConditionType.STARTS_WITH,
+      value: 'CHARGES FROM 2019'
+    },
+    decision: {
+      category: 'Expenses',
+      explanation: 'Bank Charges'
+    }
+  },
+  {
+    condition: {
+      type: types.AllocationConditionType.STARTS_WITH,
+      value: 'CHARGES FROM 2020'
+    },
+    decision: {
+      category: 'Expenses',
+      explanation: 'Bank Charges'
+    }
+  },
+  {
+    condition: {
+      type: types.AllocationConditionType.CONTAINS,
+      value: 'SJD'
+    },
+    decision: {
+      category: 'Expenses',
+      explanation: 'Accountancy'
+    }
+  },
 ]
