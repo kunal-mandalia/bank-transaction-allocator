@@ -88,11 +88,11 @@ class App extends React.Component<IAppProps> {
           : <Button label="Start" btnStyle="success" onClick={this.start}/>
         }
         <Spacer />
-        <h1>History</h1>
+        <h1>History ({this.props.storeState.history.length})</h1>
         <History history={this.props.storeState.history} />
         
         <Spacer />
-        <h1>Upcoming</h1>
+        <h1>Upcoming ({upcoming.length})</h1>
         <Upcoming allocations={upcoming} />
       </div>
     );
