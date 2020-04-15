@@ -1,4 +1,4 @@
-import { constants, message } from '@bank-transaction-allocator/common'
+import { constants, message, logger } from '@bank-transaction-allocator/common'
 import { MESSAGE_TRANSACTION_ALLOCATED } from '@bank-transaction-allocator/common/dist/constants';
 
 const {
@@ -69,7 +69,7 @@ function getTransactions(): Array<Transaction> {
 }
 
 async function announceReadiness(isReady: boolean) {
-  console.log(`announcing readiness`, isReady)
+  logger.log(`announcing readiness`, isReady)
   await sendMessage({
     type: MESSAGE_READY_FOR_ALLOCATION,
     payload: {
@@ -98,7 +98,7 @@ function showTransactionDetails(transaction: HTMLTableRowElement) {
 }
 
 async function setSelectValue(query, displayValue) {
-  console.log(`set select value of control ${query} to ${displayValue}`)
+  logger.log(`set select value of control ${query} to ${displayValue}`)
   const select = document.querySelector(query)
   if (select) {
     for (let option of select.options) {
@@ -106,7 +106,7 @@ async function setSelectValue(query, displayValue) {
         select.value = option.value
         const event = new Event('change')
         select.dispatchEvent(event)
-        console.log(`value set for ${query}`, select)
+        logger.log(`value set for ${query}`, select)
         break
       }
     }
@@ -144,7 +144,7 @@ async function updateAllocation(id: string, allocation: Allocation) {
   const close = document.getElementById('btn_close')
   close.click()
 
-  console.log('confirming transaction allocated')
+  logger.log('confirming transaction allocated')
 
   await sendMessage({
     type: MESSAGE_TRANSACTION_ALLOCATED,
@@ -162,19 +162,19 @@ async function allocate(id: string, transaction: HTMLTableRowElement, allocation
 async function allocateTransaction(id: string, allocation: Allocation) {
   const transaction = getTransactionById(id)
   if (transaction === null) {
-    return console.log(`cannot find transaction`, id)
+    return logger.log(`cannot find transaction`, id)
   }
   return allocate(id, transaction, allocation)
 }
 
 function setupMessageListener() {
   chrome.runtime.onMessage.addListener((message: Message, sender, sendResponse) => {
-    console.log(`content received message`, JSON.stringify(message), sender)
+    logger.log(`content received message`, JSON.stringify(message), sender)
 
     switch (message.type) {
       case MESSAGE_GET_TRANSACTIONS:
         const transactions = getTransactions()
-        console.log('responding with transactions', transactions)
+        logger.log('responding with transactions', transactions)
         sendResponse({ transactions })
         return true
         break
@@ -188,7 +188,7 @@ function setupMessageListener() {
         break
 
       default:
-        console.log(`content did not handle message`, message, sender)
+        logger.log(`content did not handle message`, message, sender)
         break
     }
     return true
@@ -214,12 +214,12 @@ async function waitForElement(
     maxRetries: 30,
     validator: () => true
   }): Promise<Element> {
-  console.log('wait for element options', options)
+  logger.log('wait for element options', options)
   let tries = 0
   let found = false
 
   while (tries < options.maxRetries && !found) {
-    console.log(`waiting for element ${query}. Tries: ${tries}`)
+    logger.log(`waiting for element ${query}. Tries: ${tries}`)
     tries += 1
     const el = document.querySelector(query)
     // @ts-ignore
@@ -227,7 +227,7 @@ async function waitForElement(
       if (options.validator(el) === true) {
         found = true
         // @ts-ignore
-        console.log(`found element after ${tries} tries`, el, el.value)
+        logger.log(`found element after ${tries} tries`, el, el.value)
         // el.scrollIntoView()
         return el
         break
@@ -249,13 +249,13 @@ async function waitForElementVanish(query: string, options: WaitOptions = { dura
   }
 
   while (tries < options.maxRetries && !didVanished) {
-    console.log(`waiting for element ${query} to vanish. Tries: ${tries}`)
+    logger.log(`waiting for element ${query} to vanish. Tries: ${tries}`)
     tries += 1
     const el = document.querySelector(query)
     // @ts-ignore
     if (!el || el.computedStyleMap().get("display").value === "none") {
       didVanished = true
-      console.log(`element vanished after ${tries} tries`)
+      logger.log(`element vanished after ${tries} tries`)
       // el.scrollIntoView()
       break
     }
@@ -278,10 +278,10 @@ function getNextUnallocatedTransaction(): string | null {
 
 export async function main(config: Config): Promise<void> {
   await sendMessage({ type: MESSAGE_ACTIVATE_POPUP })
-  console.log(`send message to enable popup`)
+  logger.log(`send message to enable popup`)
   setupMessageListener()
   const didVanish = await waitForElementVanish('#loading')
-  console.log(`loading complete`, didVanish)
+  logger.log(`loading complete`, didVanish)
 
   await announceReadiness(true)
   return Promise.resolve()

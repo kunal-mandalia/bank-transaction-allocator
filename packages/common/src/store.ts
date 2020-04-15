@@ -1,5 +1,7 @@
 import { MESSAGE_STORE_UPDATED } from './constants'
 import { TransactionAllocation, AllocationRule } from './types'
+import { logger } from './index'
+
 
 export enum Status {
   IDLE = 'IDLE',
@@ -54,9 +56,9 @@ export function setInitialState() {
   chrome.storage.local.get(storage => {
     if (!storage.initialised) {
       set(initialState)
-      console.log('set initial state')
+      logger.log('set initial state')
     } else {
-      console.log('state exists')
+      logger.log('state exists')
     }
   })
 }
@@ -75,8 +77,8 @@ export function isActive(state: State) {
 }
 
 export function set(state: Partial<State>): Promise<Partial<State>> {
-  return new Promise(async resolve => {
-    console.log('state set')
+  return new Promise(resolve => {
+    logger.log('state set')
     chrome.storage.local.set(state)
     chrome.runtime.sendMessage({
       type: MESSAGE_STORE_UPDATED,
