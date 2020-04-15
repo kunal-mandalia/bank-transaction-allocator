@@ -1,5 +1,5 @@
 import React from 'react';
-import { store } from '@bank-transaction-allocator/common'
+import { store, logger } from '@bank-transaction-allocator/common'
 import { startProcessingTransactions, setupMessageListeners } from './popup'
 import { History } from './History'
 import { Upcoming } from './Upcoming'
@@ -78,8 +78,8 @@ class App extends React.Component<IAppProps> {
   render() {
     const upcoming = this.getUpcomingAllocations()
     const status = this.props.storeState.status
-    console.log('App this', this, this.props.storeState)
-    console.log('upcoming', upcoming)
+    logger.log('App this', this, this.props.storeState)
+    logger.log('upcoming', upcoming)
     return (
       <div className="App">
         {
@@ -88,7 +88,7 @@ class App extends React.Component<IAppProps> {
           : <Button label="Start" btnStyle="success" onClick={this.start}/>
         }
         <Spacer />
-        <h1>History ({this.props.storeState.history.length})</h1>
+        <h1>History</h1>
         <History history={this.props.storeState.history} />
         
         <Spacer />

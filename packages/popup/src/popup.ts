@@ -2,6 +2,10 @@ import {
   MESSAGE_START_PROCESSING_TRANSACTIONS,
   MESSAGE_STORE_UPDATED
 } from "@bank-transaction-allocator/common/dist/constants";
+import {
+  logger
+} from "@bank-transaction-allocator/common/dist/index";
+
 
 const { chrome } = window
 
@@ -18,7 +22,7 @@ async function sendMessage({ message }) {
             tabId
           }
         }
-        console.log(`sending message ${JSON.stringify(messageWithTabId)}`)
+        logger.log(`sending message ${JSON.stringify(messageWithTabId)}`)
         chrome.runtime.sendMessage(messageWithTabId, response => {
           return resolve(response)
         })
@@ -31,15 +35,15 @@ async function sendMessage({ message }) {
 
 export function setupMessageListeners(input : { onStoreChange: Function }) {
   chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
-    console.log(`popup.js received message`, message, sender)
+    logger.log(`popup.js received message`, message, sender)
 
     if (!message || !message.type) {
-      console.log(`unhandled message type`, message)
+      logger.log(`unhandled message type`, message)
     }
 
     switch (message.type) {
       case MESSAGE_STORE_UPDATED:
-        console.log('popup notified store updated')
+        logger.log('popup notified store updated')
         input.onStoreChange()
         break
 

@@ -194,10 +194,10 @@
 
 <script>
   window.addEventListener('load', async () => {
-    console.log('stub loaded')
+    console.log('[Stub]: stub loaded')
 
     function init() {
-      console.log('init script')
+      console.log('[Stub]: init script')
       const modalWrapper = document.getElementById('modal-wrapper')
       const modalSubmit = document.getElementById('btn_allocation_save')
       const modalClose = document.getElementById('btn_close')
@@ -207,7 +207,7 @@
       const transactions = document.querySelectorAll('#transactions > tbody > tr')
       for (let line of transactions) {
         line.addEventListener('click', () => {
-          console.log('assigning transaction row listener')
+          console.log('[Stub]: assigning transaction row listener')
           showAllocateTransactionModal(line)
         })
       }
@@ -215,7 +215,7 @@
       category.addEventListener('change', handleCategoryChange)
 
       async function handleCategoryChange(event) {
-        console.log('handleCategoryChange', event)
+        console.log('[Stub]: handleCategoryChange', event)
         const { value } = event.target
         if (value !== 'default') {
           const duration = Math.random() * 1000 * 4
@@ -295,7 +295,7 @@
     async function simulateDelay(maxSeconds = 5) {
       const duration = Math.random() * maxSeconds * 1000
       await wait(duration)
-      console.log('delay over')
+      console.log('[Stub]: delay over')
       const loading = document.getElementById('loading')
       loading.classList.remove('show')
       loading.classList.add('hide')
