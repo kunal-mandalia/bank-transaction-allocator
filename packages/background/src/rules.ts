@@ -81,4 +81,34 @@ export const rules = [
       explanation: 'Accountancy'
     }
   },
+  {
+    condition: {
+      type: types.AllocationConditionType.STARTS_WITH,
+      value: 'CARD PAYMENT TO UPAY'
+    },
+    decision: {
+      category: 'Expenses',
+      explanation: 'Subsistence'
+    }
+  },
+  {
+    condition: {
+      type: types.AllocationConditionType.STARTS_WITH,
+      value: 'CARD PAYMENT TO KFC'
+    },
+    decision: {
+      category: 'Expenses',
+      explanation: 'Subsistence'
+    }
+  },
+  {
+    condition: {
+      type: types.AllocationConditionType.STARTS_WITH,
+      value: 'CARD PAYMENT TO MCDONALDS'
+    },
+    decision: {
+      category: 'Expenses',
+      explanation: 'Subsistence'
+    }
+  }
 ]

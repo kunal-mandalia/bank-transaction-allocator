@@ -1,4 +1,4 @@
-import { store, message, constants, types } from '@bank-transaction-allocator/common'
+import { store, message, constants, types, logger } from '@bank-transaction-allocator/common'
 import { getTransactionAllocations } from './transaction'
 import { rules } from './rules'
 
@@ -17,12 +17,14 @@ const {
   Status: MessageStatus
 } = message
 
+const MAX_HISTORY = 5;
+
 export function setupMessageListener() {
   chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
-    console.log(`background.js received message`, message, sender)
+    logger.log(`background.js received message`, message, sender)
 
     if (!message || !message.type) {
-      console.log(`unhandled message type`, message)
+      logger.log(`unhandled message type`, message)
     }
 
     switch (message.type) {
@@ -54,7 +56,7 @@ export function setupMessageListener() {
         break
 
       case MESSAGE_TRANSACTION_ALLOCATED:
-        console.log('handling allocated transaction', message)
+        logger.log('handling allocated transaction', message)
         handleTransactionAllocated(message.payload.id)
         return true
         break
@@ -109,7 +111,7 @@ async function handleReadyForAllocation() {
   await syncAllocations({ tabId })
 
   if (state.status !== store.Status.ACTIVE) {
-    return console.log('skipping processing: content ready but background not active')
+    return logger.log('skipping processing: content ready but background not active')
   }
   
   await processNextAllocation()
@@ -132,7 +134,7 @@ interface IGetLatestState {
 }
 
 export function getLatestState({ allocations, state } : IGetLatestState): store.State {
-  console.log('getLatestState allocations',allocations)
+  logger.log('getLatestState allocations',allocations)
 
   let nextHistory = [...state.history]
 
@@ -162,7 +164,7 @@ export function getLatestState({ allocations, state } : IGetLatestState): store.
     }
   })
 
-  console.log('next history', nextHistory)
+  logger.log('next history', nextHistory)
 
   return {
     ...state,
@@ -214,7 +216,7 @@ async function processNextAllocation() {
       })
     } else {
       const history = state.history;
-      console.log(`history`, history)
+      logger.log(`history`, history)
       await store.set({
         history: [
           ...state.history,
@@ -250,7 +252,10 @@ async function handleTransactionAllocated(id: string) {
     result: store.TransactionHistoryStatus.ALLOCATION_SUCCESSFUL
   }
 
+  const limitedHistory = state.history.length > MAX_HISTORY ?
+   state.history.slice(state.history.length-MAX_HISTORY, state.history.length) : state.history
+
   await store.set({
-    history: state.history.map(h => (h.id === id ? updatedHistoryItem : h))
+    history: limitedHistory.map(h => (h.id === id ? updatedHistoryItem : h))
   })
 }
