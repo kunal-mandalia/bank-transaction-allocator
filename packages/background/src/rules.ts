@@ -18,7 +18,7 @@ export const rules = [
     },
     decision: {
       category: 'Expenses',
-      explanation: 'Sundry Expenses',
+      explanation: 'Subsistence',
     },
   },
   {
@@ -28,7 +28,7 @@ export const rules = [
     },
     decision: {
       category: 'Expenses',
-      explanation: 'Sundry Expenses',
+      explanation: 'Subsistence',
     },
   },
   {
