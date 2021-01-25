@@ -151,4 +151,24 @@ export const rules = [
       explanation: 'Travel',
     },
   },
+  {
+    condition: {
+      type: types.AllocationConditionType.CONTAINS,
+      value: 'GOOGLE',
+    },
+    decision: {
+      category: 'Expenses',
+      explanation: 'Computer Costs',
+    },
+  },
+  {
+    condition: {
+      type: types.AllocationConditionType.CONTAINS,
+      value: 'WATSI.ORG',
+    },
+    decision: {
+      category: 'Expenses',
+      explanation: 'Charitable Donations',
+    },
+  },
 ]
