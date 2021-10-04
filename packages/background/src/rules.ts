@@ -64,7 +64,7 @@ export const rules = [
   {
     condition: {
       type: types.AllocationConditionType.STARTS_WITH,
-      value: 'CHARGES FROM 2019',
+      value: 'CHARGES FROM 20',
     },
     decision: {
       category: 'Expenses',
@@ -169,6 +169,56 @@ export const rules = [
     decision: {
       category: 'Expenses',
       explanation: 'Charitable Donations',
+    },
+  },
+  {
+    condition: {
+      type: types.AllocationConditionType.CONTAINS,
+      value: 'AMAZON',
+    },
+    decision: {
+      category: 'Expenses',
+      explanation: 'Computer Costs',
+    },
+  },
+  {
+    condition: {
+      type: types.AllocationConditionType.CONTAINS,
+      value: 'BOLT',
+    },
+    decision: {
+      category: 'Expenses',
+      explanation: 'Travel',
+    },
+  },
+  {
+    condition: {
+      type: types.AllocationConditionType.CONTAINS,
+      value: 'COFFEE',
+    },
+    decision: {
+      category: 'Expenses',
+      explanation: 'Subsistence',
+    },
+  },
+  {
+    condition: {
+      type: types.AllocationConditionType.CONTAINS,
+      value: 'VISION',
+    },
+    decision: {
+      category: 'Expenses',
+      explanation: 'Staff Welfare',
+    },
+  },
+  {
+    condition: {
+      type: types.AllocationConditionType.CONTAINS,
+      value: 'TRAIN',
+    },
+    decision: {
+      category: 'Expenses',
+      explanation: 'Travel',
     },
   },
 ]
