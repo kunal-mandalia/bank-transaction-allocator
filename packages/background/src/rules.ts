@@ -221,4 +221,14 @@ export const rules = [
       explanation: 'Travel',
     },
   },
+  {
+    condition: {
+      type: types.AllocationConditionType.CONTAINS,
+      value: 'COACH',
+    },
+    decision: {
+      category: 'Expenses',
+      explanation: 'Travel',
+    },
+  },
 ]
