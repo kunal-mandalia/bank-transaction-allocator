@@ -21,16 +21,16 @@ export const rules = [
       explanation: 'Subsistence',
     },
   },
-  {
-    condition: {
-      type: types.AllocationConditionType.STARTS_WITH,
-      value: 'CARD PAYMENT TO TESCO STORE',
-    },
-    decision: {
-      category: 'Expenses',
-      explanation: 'Subsistence',
-    },
-  },
+  // {
+  //   condition: {
+  //     type: types.AllocationConditionType.STARTS_WITH,
+  //     value: 'CARD PAYMENT TO TESCO STORE',
+  //   },
+  //   decision: {
+  //     category: 'Expenses',
+  //     explanation: 'Subsistence',
+  //   },
+  // },
   {
     condition: {
       type: types.AllocationConditionType.STARTS_WITH,
@@ -229,6 +229,56 @@ export const rules = [
     decision: {
       category: 'Expenses',
       explanation: 'Travel',
+    },
+  },
+  {
+    condition: {
+      type: types.AllocationConditionType.CONTAINS,
+      value: 'TFL',
+    },
+    decision: {
+      category: 'Expenses',
+      explanation: 'Travel',
+    },
+  },
+  {
+    condition: {
+      type: types.AllocationConditionType.CONTAINS,
+      value: 'AVANTI',
+    },
+    decision: {
+      category: 'Expenses',
+      explanation: 'Travel',
+    },
+  },
+  {
+    condition: {
+      type: types.AllocationConditionType.CONTAINS,
+      value: 'AMZNMKTPLACE',
+    },
+    decision: {
+      category: 'Expenses',
+      explanation: 'Computer Costs',
+    },
+  },
+  {
+    condition: {
+      type: types.AllocationConditionType.CONTAINS,
+      value: 'FOREIGN CURRENCY',
+    },
+    decision: {
+      category: 'Expenses',
+      explanation: 'Bank Charges',
+    },
+  },
+  {
+    condition: {
+      type: types.AllocationConditionType.CONTAINS,
+      value: 'PURE GYM',
+    },
+    decision: {
+      category: 'Expenses',
+      explanation: 'Staff Welfare',
     },
   },
 ]
